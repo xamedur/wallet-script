@@ -1,15 +1,26 @@
 // Log to debug when the script is loaded
 console.log("wallet.js script loaded");
 
+// Function to check if we're in a browser environment
+function isBrowser() {
+    return typeof window !== 'undefined' && typeof document !== 'undefined';
+}
+
 // Defer execution until the browser environment is fully loaded
-if (typeof window !== 'undefined') {
-    window.addEventListener('load', () => {
+function initializeWalletConnection() {
+    if (!isBrowser()) {
+        console.error("wallet.js: Not in a browser environment, skipping initialization");
+        return;
+    }
+
+    // Add a small delay to ensure the browser environment is fully loaded
+    setTimeout(() => {
         console.log("Browser environment loaded, defining connectPhantomWallet");
 
         window.connectPhantomWallet = async function(callback) {
             try {
                 // Double-check we're in a browser environment
-                if (typeof window === 'undefined') {
+                if (!isBrowser()) {
                     console.error("window is undefined in connectPhantomWallet");
                     callback({
                         success: false,
@@ -61,7 +72,17 @@ if (typeof window !== 'undefined') {
                 });
             }
         };
-    });
+    }, 1000); // Delay of 1 second to ensure browser environment is ready
+}
+
+// Run initialization only in the browser
+if (isBrowser()) {
+    // Use both window.onload and a fallback to ensure the script runs after the page is fully loaded
+    if (document.readyState === 'complete') {
+        initializeWalletConnection();
+    } else {
+        window.addEventListener('load', initializeWalletConnection);
+    }
 } else {
-    console.error("wallet.js: window is undefined during script evaluation");
+    console.error("wallet.js: Not in a browser environment during initial evaluation");
 }
