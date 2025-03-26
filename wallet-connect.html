@@ -4,7 +4,6 @@
     <title>Wallet Connect</title>
 </head>
 <body>
-    <button id="connectButton" style="display: none;">Connect</button>
     <script>
         // Function to check if we're in a browser environment
         function isBrowser() {
@@ -48,21 +47,8 @@
                 }
             }
 
-            // Add click handler for the Connect button
-            const connectButton = document.getElementById('connectButton');
-            if (connectButton) {
-                connectButton.addEventListener('click', () => {
-                    console.log("Connect button clicked in iframe");
-                    connectPhantomWallet();
-                });
-            }
-
-            // Listen for a message from the parent to trigger the connection
-            window.addEventListener('message', (event) => {
-                if (event.data.action === 'connect') {
-                    connectPhantomWallet();
-                }
-            });
+            // Automatically attempt to connect when the page loads
+            connectPhantomWallet();
         }
     </script>
 </body>
